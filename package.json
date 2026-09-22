@@ -1,0 +1,49 @@
+{
+  "name": "print-preset",
+  "productName": "Script Print",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Batch document printing tool for The University of Auckland",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev -- --port 5173",
+    "dev": "concurrently -k \"npm:dev:frontend\" \"npm:dev:electron\"",
+    "dev:electron": "wait-on tcp:5173 && cross-env ELECTRON_START_URL=http://localhost:5173 electron .",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:frontend && electron-builder",
+    "build:win": "npm run build:frontend && electron-builder --win",
+    "build:mac": "npm run build:frontend && electron-builder --mac",
+    "postinstall": "cd frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "cross-env": "^7.0.3",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.0",
+    "wait-on": "^8.0.0"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  },
+  "build": {
+    "appId": "nz.ac.auckland.printpreset",
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*"
+    ],
+    "directories": {
+      "buildResources": "build-resources",
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.productivity"
+    }
+  },
+  "allowScripts": {
+    "electron@33.4.11": true
+  }
+}
