@@ -32,21 +32,6 @@ script-print/
 └── package.json          # Electron + electron-builder scripts
 ```
 
-## What changed from the prototype, and why
-
-| Prototype (browser) | Desktop app | Why |
-|---|---|---|
-| `<input type=file>` fabricates a File object with a random page count | Native OS file dialog (`dialog.showOpenDialog`) returns real filesystem paths | Browsers never expose real paths; a desktop app can and should use them directly |
-| Drag-and-drop files had no real path | `webUtils.getPathForFile()` resolves the dropped File to its real path | Needed for the main process to read/print the actual file |
-| Page count: `Math.random() * 40` | Real page count from `pdf-lib` (`PDFDocument.getPageCount()`) | Simulated data isn't useful once real files are involved |
-| Color detection: regex on the **filename** | Real detection: decompresses each page's content stream and inspects actual paint operators + drawn images (see below) | Filename-based detection was a placeholder guess |
-| Printer list: hardcoded array of 3 fake names | `webContents.getPrintersAsync()` — the actual printers installed/visible on the user's OS | Needed to work on any machine, not just demo data |
-| "Send to Printer": `setTimeout` + 10% random failure | Real print job submitted to CUPS via `lp`, using the chosen printer, color, duplex, and staple settings | This is the core functionality the prototype only mocked |
-
-Everything else — the queue UI, reordering (drag or arrow buttons), delete,
-toggles, the color-warning and result dialogs — is unchanged, since it was
-already fully functional and doesn't need OS access.
-
 ## Printing — how it actually works
 
 Printing goes straight to CUPS via the `lp` command line tool
@@ -189,8 +174,7 @@ if the final DMG step fails — check there if you just need the app itself.
 1. **Windows printing**: not implemented — see above. Would need the
    `pdf-to-printer` package or equivalent.
 2. **Code signing**: unsigned builds will trigger Gatekeeper warnings on
-   first run. For real distribution you'll want an Apple Developer ID +
+   first run. For real distribution, you'll want an Apple Developer ID +
    notarization — not wired up since it needs your actual certificates.
-3. **License**: not yet decided — this was built using University of
-   Auckland printer infrastructure, so ownership/IP should be confirmed
-   with the university before publishing this publicly under any license.
+3. **License**: MIT — this was built for the University of
+   Auckland printer infrastructure.
